@@ -161,6 +161,7 @@ function LabArt({ accent }) {
   if (accent === "stryde") return <div className="posterArt posterArt--stryde"><span>AERO / 01</span><strong>MOVE<br />IN<br /><em>FORM</em></strong><div className="shoeShape" /></div>;
   if (accent === "naxus") return <div className="posterArt posterArt--naxus"><span>GRADE A / GLOBAL</span><strong>DEVICE<br />FLOW</strong><div className="deviceStack"><i /><i /><i /></div></div>;
   if (accent === "satyasee") return <div className="posterArt posterArt--satyasee"><span>ROOTED IN INDIA</span><strong>सत्यसी</strong><div className="spiceOrb" /><b>ORIGIN / 06</b></div>;
+  if (accent === "todfood") return <div className="posterArt posterArt--todfood"><span>FROM THE KITCHEN / 01</span><strong>GOOD<br /><em>FOOD.</em></strong><div className="foodOrb" /><b>ORDER / SHARE / ENJOY</b></div>;
   return <div className="posterArt posterArt--noliqs"><span>SOFT / DRY / READY</span><strong>little<br /><em>comforts.</em></strong><div className="packShape" /><b>SIZE 4 / OVERNIGHT</b></div>;
 }
 
