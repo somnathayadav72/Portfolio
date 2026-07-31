@@ -1,31 +1,106 @@
 import "./globals.css";
+import { site } from "@/config/site";
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+const siteUrl = site.url;
+const description = "Somnath Yadav is a frontend and Next.js full-stack developer in India building fast product interfaces, APIs, PostgreSQL and Prisma systems, and payment workflows.";
+const socialImage = "/opengraph-image.png";
 
 export const metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "Somnath Yadav — Frontend Developer",
+    default: "Somnath Yadav | Frontend & Next.js Full-stack Developer",
     template: "%s | Somnath Yadav",
   },
-    description: "Frontend Developer with Next.js full-stack capability, building SaaS, B2B, ERP, consumer products, APIs, data systems, and payment flows.",
+  description,
+  applicationName: "Somnath Yadav Portfolio",
+  authors: [{ name: "Somnath Yadav", url: siteUrl }],
+  creator: "Somnath Yadav",
+  publisher: "Somnath Yadav",
+  category: "technology",
+  keywords: [
+    "Somnath Yadav",
+    "Somnath Yadav frontend developer",
+    "frontend developer India",
+    "Next.js full-stack developer",
+    "React developer",
+    "Next.js developer",
+    "PostgreSQL Prisma developer",
+    "Stripe Razorpay integration",
+    "frontend engineer Rajkot",
+  ],
+  alternates: { canonical: "/" },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
   openGraph: {
-    title: "Somnath Yadav — Frontend Developer",
-    description: "Selected product work, independent products, full-stack Next.js capability, and frontend design experiments.",
-    images: [{ url: "/brand/social-avatar.svg", width: 1200, height: 630, alt: "Somnath Yadav frontend portfolio" }],
+    type: "website",
+    locale: "en_IN",
+    url: siteUrl,
+    siteName: "Somnath Yadav Portfolio",
+    title: "Somnath Yadav | Frontend & Next.js Full-stack Developer",
+    description,
+    images: [{ url: socialImage, width: 1200, height: 630, alt: "Somnath Yadav — frontend and Next.js full-stack developer" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Somnath Yadav — Frontend Developer",
-    description: "React, Next.js full-stack product engineering, PostgreSQL, Prisma, payments, performance, and interaction design.",
-    images: ["/brand/social-avatar.svg"],
+    title: "Somnath Yadav | Frontend & Next.js Full-stack Developer",
+    description,
+    images: [socialImage],
   },
+  icons: { icon: "/icon.svg", apple: "/apple-icon.png" },
+};
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Person",
+      "@id": `${siteUrl}/#person`,
+      name: "Somnath Yadav",
+      url: siteUrl,
+      image: `${siteUrl}${socialImage}`,
+      jobTitle: "Frontend & Next.js Full-stack Developer",
+      description,
+      email: "mailto:somnathyadav2000@gmail.com",
+      address: { "@type": "PostalAddress", addressLocality: "Rajkot", addressRegion: "Gujarat", addressCountry: "IN" },
+      knowsAbout: ["React", "Next.js", "JavaScript", "TypeScript", "PostgreSQL", "Prisma", "Stripe", "Razorpay", "API design", "Frontend performance", "Product interface design"],
+      sameAs: ["https://github.com/somnathayadav72"],
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${siteUrl}/#website`,
+      url: siteUrl,
+      name: "Somnath Yadav Portfolio",
+      description,
+      publisher: { "@id": `${siteUrl}/#person` },
+      inLanguage: "en-IN",
+    },
+    {
+      "@type": "ProfilePage",
+      "@id": `${siteUrl}/#profile`,
+      url: siteUrl,
+      name: "Somnath Yadav — Frontend Developer Portfolio",
+      isPartOf: { "@id": `${siteUrl}/#website` },
+      mainEntity: { "@id": `${siteUrl}/#person` },
+    },
+  ],
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        {children}
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData).replace(/</g, "\\u003c") }} />
+      </body>
     </html>
   );
 }

@@ -17,6 +17,14 @@ function scrollToId(id) {
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
+function openProject(url) {
+  window.open(url, "_blank", "noopener,noreferrer");
+}
+
+function isInteractiveTarget(event) {
+  return event.target instanceof Element && event.target.closest("a, button");
+}
+
 function BrowserFrame({ kind, title, accent, children }) {
   return (
     <div className={`browserFrame browserFrame--${accent} browserFrame--${kind}`}>
@@ -157,8 +165,22 @@ function MandalBoard() {
   return <div className="mandalVisual"><div className="visualNote mono">PUBLIC SITE / ADMIN WORKSPACE</div><div className="mandalHero"><span className="mandalEyebrow">SHREE MAHARASHTRA YUVAK MANDAL</span><strong>Festival<br /><em>in motion.</em></strong><div className="mandalArch"><i /><i /><i /></div></div><div className="mandalStats"><span><b>11</b>DAYS</span><span><b>05</b>QUEUES</span><span><b>∞</b>STORIES</span></div><div className="mandalFooter"><span>PRISMA + POSTGRESQL</span><b>PUBLIC ↔ ADMIN</b></div></div>;
 }
 
+function IndependentProductCard({ project, index }) {
+  const openCard = (event) => {
+    if (!isInteractiveTarget(event)) openProject(project.url);
+  };
+  const openCardWithKeyboard = (event) => {
+    if (isInteractiveTarget(event)) return;
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      openProject(project.url);
+    }
+  };
+  return <article className={`productPanel productPanel--${project.accent}`} onClick={openCard} onKeyDown={openCardWithKeyboard}><div className="productPanel__top"><span className="productPanel__id">P / {String(index + 1).padStart(2, "0")}</span><span className="productPanel__role">{project.role}</span></div><div className="productPanel__visual">{project.interaction === "store" ? <StoreMorph /> : project.interaction === "mandal" ? <MandalBoard /> : <PlayableGrid />}</div><div className="productPanel__bottom"><div><h3>{project.title}</h3><p>{project.subtitle}</p><span>{project.description}</span></div><a className="button button--light" href={project.url} target="_blank" rel="noopener noreferrer">Open live project <ArrowUpRight size={15} /></a></div></article>;
+}
+
 function IndependentProducts() {
-  return <section id="products" className="section products sectionAnchor"><div className="sectionHeader sectionHeader--split"><div><span className="sectionKicker sectionKicker--signal">03 / Independent products</span><h2>Ideas taken from <em>blank page</em> to live URL.</h2></div><p>Personal products where product thinking, visual systems, and frontend engineering share the same surface.</p></div><div className="productSplit">{independentProjects.map((project, index) => <article key={project.id} className={`productPanel productPanel--${project.accent}`}><div className="productPanel__top"><span className="productPanel__id">P / {String(index + 1).padStart(2, "0")}</span><span className="productPanel__role">{project.role}</span></div><div className="productPanel__visual">{project.interaction === "store" ? <StoreMorph /> : project.interaction === "mandal" ? <MandalBoard /> : <PlayableGrid />}</div><div className="productPanel__bottom"><div><h3>{project.title}</h3><p>{project.subtitle}</p><span>{project.description}</span></div>{project.url && <a className="button button--light" href={project.url} target="_blank" rel="noopener noreferrer">Open live project <ArrowUpRight size={15} /></a>}</div></article>)}</div></section>;
+  return <section id="products" className="section products sectionAnchor"><div className="sectionHeader sectionHeader--split"><div><span className="sectionKicker sectionKicker--signal">03 / Independent products</span><h2>Ideas taken from <em>blank page</em> to live URL.</h2></div><p>Personal products where product thinking, visual systems, and frontend engineering share the same surface.</p></div><div className="productSplit">{independentProjects.map((project, index) => <IndependentProductCard key={project.id} project={project} index={index} />)}</div></section>;
 }
 
 function LabArt({ accent }) {
@@ -187,33 +209,23 @@ function About() {
 }
 
 function Contact() {
-  const web3FormsAccessKey = process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY;
   const [form, setForm] = useState({ name: "", email: "", company: "", type: "Frontend role", message: "" });
   const [submitted, setSubmitted] = useState(false);
   const [copied, setCopied] = useState(false);
   const [submissionState, setSubmissionState] = useState("idle");
-  const [delivery, setDelivery] = useState("formspree");
   const update = (key) => (event) => setForm((current) => ({ ...current, [key]: event.target.value }));
-  const mailtoUrl = `mailto:${site.email}?subject=${encodeURIComponent(`${form.type} enquiry from ${form.name}`)}&body=${encodeURIComponent(`Name: ${form.name}\nEmail: ${form.email}\nCompany: ${form.company || "Not provided"}\nProject type: ${form.type}\n\n${form.message}`)}`;
   const submit = async (event) => {
     event.preventDefault();
     if (!form.name || !form.email || !form.message) return;
-    if (!web3FormsAccessKey) {
-      setDelivery("mailto");
-      setSubmitted(true);
-      window.location.href = mailtoUrl;
-      return;
-    }
     setSubmissionState("sending");
     try {
-      const response = await fetch("https://api.web3forms.com/submit", {
+      const response = await fetch("/api/contact", {
         method: "POST",
-        headers: { Accept: "application/json", "Content-Type": "application/json" },
-        body: JSON.stringify({ access_key: web3FormsAccessKey, subject: `${form.type} enquiry from ${form.name}`, from_name: "Somnath Yadav Portfolio", ...form, project_type: form.type, botcheck: "" }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ...form, projectType: form.type }),
       });
-      const result = await response.json();
-      if (!response.ok || !result.success) throw new Error("Form submission failed");
-      setDelivery("formspree");
+      const result = await response.json().catch(() => null);
+      if (!response.ok || !result?.success) throw new Error("Form submission failed");
       setSubmitted(true);
       setSubmissionState("idle");
     } catch {
@@ -221,7 +233,7 @@ function Contact() {
     }
   };
   const copyEmail = async () => { await navigator.clipboard?.writeText(site.email); setCopied(true); window.setTimeout(() => setCopied(false), 1800); };
-  return <section id="contact" className="contact sectionAnchor"><div className="contact__intro"><span className="sectionKicker sectionKicker--cyan">07 / Contact</span><h2>Have a product with a complicated frontend?<br /><em>Let’s make it clear.</em></h2><p>Send a note through the form or email me directly. I’ll get back to you with the next step.</p><div className="contact__email"><a href={`mailto:${site.email}`}>{site.email}</a><button onClick={copyEmail} aria-label="Copy email">{copied ? <Check size={15} /> : <Copy size={15} />}</button></div></div><div className="contact__formWrap">{submitted ? <div className="successState"><span className="successState__icon"><Check /></span><span className="mono">MESSAGE SENT</span><h3>Thanks, {form.name.split(" ")[0]}.</h3><p>{delivery === "formspree" ? "Your message is on its way. I’ll get back to you by email." : "Your email app should open with the message ready to send."}</p><a className="button button--dark" href={mailtoUrl}>Email directly <ArrowUpRight size={15} /></a><button className="textLink" onClick={() => setSubmitted(false)}>Send another message</button></div> : <form className="contactForm" onSubmit={submit}><div className="formRow"><label>Name<input name="name" value={form.name} onChange={update("name")} placeholder="Your name" required /></label><label>Email<input name="email" type="email" value={form.email} onChange={update("email")} placeholder="you@company.com" required /></label></div><div className="formRow"><label>Company<input name="company" value={form.company} onChange={update("company")} placeholder="Optional" /></label><label>Project type<select name="project_type" value={form.type} onChange={update("type")}><option>Frontend role</option><option>Next.js full-stack product</option><option>Freelance project</option><option>SaaS product</option><option>Marketing website</option><option>Collaboration</option></select></label></div><label>Message<textarea name="message" value={form.message} onChange={update("message")} placeholder="What are you building?" rows={4} required /></label><div className="formBottom">{submissionState === "error" && <span className="formError" role="alert">Could not send automatically. Email me directly at {site.email}.</span>}<button className="button button--dark" type="submit" disabled={submissionState === "sending"}>{submissionState === "sending" ? "Sending…" : "Send message"} <ArrowUpRight size={15} /></button></div></form>}</div></section>;
+  return <section id="contact" className="contact sectionAnchor"><div className="contact__intro"><span className="sectionKicker sectionKicker--cyan">07 / Contact</span><h2>Have a product with a complicated frontend?<br /><em>Let’s make it clear.</em></h2><p>Send a note through the form or email me directly. I’ll get back to you with the next step.</p><div className="contact__email"><a href={`mailto:${site.email}`}>{site.email}</a><button onClick={copyEmail} aria-label="Copy email">{copied ? <Check size={15} /> : <Copy size={15} />}</button></div></div><div className="contact__formWrap">{submitted ? <div className="successState" aria-live="polite"><span className="successState__icon"><Check /></span><span className="mono">MESSAGE SENT</span><h3>Thanks, {form.name.split(" ")[0]}.</h3><p>Sent directly through Resend. You don’t need to open an email app.</p><button className="textLink" onClick={() => setSubmitted(false)}>Send another message</button></div> : <form className="contactForm" onSubmit={submit}><div className="formRow"><label>Name<input name="name" value={form.name} onChange={update("name")} placeholder="Your name" required /></label><label>Email<input name="email" type="email" value={form.email} onChange={update("email")} placeholder="you@company.com" required /></label></div><div className="formRow"><label>Company<input name="company" value={form.company} onChange={update("company")} placeholder="Optional" /></label><label>Project type<select name="project_type" value={form.type} onChange={update("type")}><option>Frontend role</option><option>Next.js full-stack product</option><option>Freelance project</option><option>SaaS product</option><option>Marketing website</option><option>Collaboration</option></select></label></div><label>Message<textarea name="message" value={form.message} onChange={update("message")} placeholder="What are you building?" rows={4} required /></label><div className="formBottom">{submissionState === "error" && <span className="formError" role="alert">Could not send automatically. Please try again or email {site.email}.</span>}<button className="button button--dark" type="submit" disabled={submissionState === "sending"}>{submissionState === "sending" ? "Sending…" : "Send message"} <ArrowUpRight size={15} /></button></div></form>}</div></section>;
 }
 
 function Footer() {

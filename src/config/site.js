@@ -1,8 +1,9 @@
 export const site = {
   name: "Somnath Yadav",
-  role: "Frontend Developer",
+  role: "Frontend & Next.js Full-stack Developer",
   profileLabel: "Frontend Developer · Next.js Full-stack",
   location: "Rajkot, Gujarat, India",
+  url: process.env.NEXT_PUBLIC_SITE_URL || "https://somnathyadav.in",
   email: "somnathyadav2000@gmail.com",
   phone: "+91 72019 55313",
   showPhonePublicly: false,

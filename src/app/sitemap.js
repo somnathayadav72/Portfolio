@@ -1,3 +1,5 @@
+import { site } from "@/config/site";
+
 export default function sitemap() {
-  return [{ url: "https://somnathyadav.dev", lastModified: new Date() }];
+  return [{ url: site.url, lastModified: new Date(), changeFrequency: "monthly", priority: 1 }];
 }
