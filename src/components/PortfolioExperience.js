@@ -176,7 +176,7 @@ function IndependentProductCard({ project, index }) {
       openProject(project.url);
     }
   };
-  return <article className={`productPanel productPanel--${project.accent}`} onClick={openCard} onKeyDown={openCardWithKeyboard}><div className="productPanel__top"><span className="productPanel__id">P / {String(index + 1).padStart(2, "0")}</span><span className="productPanel__role">{project.role}</span></div><div className="productPanel__visual">{project.interaction === "store" ? <StoreMorph /> : project.interaction === "mandal" ? <MandalBoard /> : <PlayableGrid />}</div><div className="productPanel__bottom"><div><h3>{project.title}</h3><p>{project.subtitle}</p><span>{project.description}</span></div><a className="button button--light" href={project.url} target="_blank" rel="noopener noreferrer">Open live project <ArrowUpRight size={15} /></a></div></article>;
+  return <article className={`productPanel productPanel--${project.accent}`} onClick={openCard} onKeyDown={openCardWithKeyboard}><div className="productPanel__top"><span className="productPanel__id">P / {String(index + 1).padStart(2, "0")}</span><span className="productPanel__role">{project.role}</span></div><div className="productPanel__visual">{project.interaction === "store" ? <StoreMorph /> : project.interaction === "mandal" ? <MandalBoard /> : <PlayableGrid />}</div><div className="productPanel__bottom"><div><h3>{project.title}</h3><p>{project.subtitle}</p><span>{project.description}</span></div><a className="productPanel__link" href={project.url} target="_blank" rel="noopener noreferrer"><span>Open live project</span><ArrowUpRight size={15} /></a></div></article>;
 }
 
 function IndependentProducts() {
