@@ -86,6 +86,16 @@ export const independentProjects = [
     accent: "grid",
     interaction: "grid",
   },
+  {
+    id: "maharashtra-yuvak-mandal",
+    title: "Shree Maharashtra Yuvak Mandal",
+    subtitle: "Bilingual festival and community platform",
+    role: "Independent Product · Next.js Full-stack · Designed and Built by Somnath",
+    description: "Designed and built a bilingual full-stack community platform with a public festival experience and protected admin workspace. Visitors can explore schedules, stories, galleries, committee members, volunteer registration, procession routes, and contact details, while the team manages Prisma/PostgreSQL-backed content, media, translations, notifications, audit history, and site settings.",
+    url: "https://maharashtra-yuvak-mandal.vercel.app/en",
+    accent: "mandal",
+    interaction: "mandal",
+  },
 ];
 
 export const labProjects = [
